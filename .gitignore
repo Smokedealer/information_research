@@ -1,2 +1,6 @@
 interface/TREC
 interface/trec_eval.8.1
+interface/.classpath
+interface/.project
+interface/.settings
+interface/target
