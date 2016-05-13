@@ -4,12 +4,33 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.xml.stream.*;
 
 /**
  * @author tigi
  */
 public class IOUtils {
 
+	public static void nactiXML(String soubor) {
+		try {
+			XMLInputFactory f = XMLInputFactory.newInstance();
+			XMLStreamReader r = f.createXMLStreamReader(new FileInputStream(soubor));
+			
+			int i = 0;
+			while (r.hasNext()) {
+				i++;
+				r.next();
+			}
+			System.out.println("Pocet udalosti: " + i);
+			
+		} catch(XMLStreamException e) {
+			System.out.println("Chyba pri cteni XML souboru " + soubor + ".");
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
     /**
      * Read lines from the stream; lines are trimmed and empty lines are ignored.
      *

@@ -1,4 +1,4 @@
-package cz.zcu.kiv.nlp.ir.preprocessing;
+package cz.zcu.kiv.nlp.ir.statistics;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,17 +10,21 @@ import java.util.List;
 import java.util.Set;
 
 import cz.zcu.kiv.nlp.ir.preprocessing.CzechStemmerAgressive;
+import cz.zcu.kiv.nlp.ir.preprocessing.CzechStemmerLight;
+import cz.zcu.kiv.nlp.ir.preprocessing.Stemming;
+import cz.zcu.kiv.nlp.ir.preprocessing.Tokenizer;
 import cz.zcu.kiv.nlp.ir.trec.IOUtils;
 
-public class Preprocessing {
+public class Preprocessing implements Statistics{
+
 	static Stemming stemmer = new CzechStemmerAgressive();
 
-    public static void main(String[] args) {
+    public void RunStatistics(String file) {
     	
     	// get words for preprocessing from file
     	List<String> textForTokenizing = new ArrayList<String>();
     	try {
-    		File textFromFile = new File(args[0]);
+    		File textFromFile = new File(file);
     		textForTokenizing.addAll(IOUtils.readLines(new FileInputStream(textFromFile)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -124,4 +128,5 @@ public class Preprocessing {
     private static String[] tokenize(String line, String regex) {
         return Tokenizer.tokenize(line, regex);
     }
+	
 }
