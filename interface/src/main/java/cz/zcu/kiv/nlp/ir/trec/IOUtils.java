@@ -3,8 +3,11 @@ package cz.zcu.kiv.nlp.ir.trec;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.stream.*;
+
+import cz.zcu.kiv.nlp.ir.trec.data.Topic;
 
 /**
  * @author tigi
@@ -16,12 +19,38 @@ public class IOUtils {
 			XMLInputFactory f = XMLInputFactory.newInstance();
 			XMLStreamReader r = f.createXMLStreamReader(new FileInputStream(soubor));
 			
-			int i = 0;
-			while (r.hasNext()) {
-				i++;
+			HashSet<Topic> topics = new HashSet<Topic>();
+			Topic t = null;
+			
+			while (r.hasNext() == true) {
 				r.next();
+				if (r.isStartElement() == true) {
+					if (r.getLocalName().equals(Tags.TOPIC.getTag())) {
+						// new topic
+						t = new Topic();
+						// set lang
+						t.setLang(r.getAttributeValue(null, Tags.LANG.getTag()));
+						
+					} else if (r.getLocalName().equals(Tags.IDENTIFIER.getTag())) {
+						// set identifier
+						t.setId(r.getElementText());
+						
+					} else if (r.getLocalName().equals(Tags.TITLE.getTag())) {
+						// set title
+						t.setTitle(r.getElementText());
+						
+					} else if (r.getLocalName().equals(Tags.DESCRIPTION.getTag())) {
+						// set description
+						t.setDescription(r.getElementText());
+						
+					} else if (r.getLocalName().equals(Tags.NARRATIVE.getTag())) {
+						// set narrative
+						t.setNarrative(r.getElementText());
+						
+					}
+					// TODO set close of TOPic and add topicObject to the topics hashset
+				}
 			}
-			System.out.println("Pocet udalosti: " + i);
 			
 		} catch(XMLStreamException e) {
 			System.out.println("Chyba pri cteni XML souboru " + soubor + ".");
