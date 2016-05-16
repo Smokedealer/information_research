@@ -14,18 +14,22 @@ import cz.zcu.kiv.nlp.ir.trec.data.Topic;
  */
 public class IOUtils {
 
-	public static void nactiXML(String soubor) {
+	public static HashSet<Topic> nactiXML(String soubor) {
+		HashSet<Topic> topics = null;
+		Topic t = null;
+
 		try {
 			XMLInputFactory f = XMLInputFactory.newInstance();
 			XMLStreamReader r = f.createXMLStreamReader(new FileInputStream(soubor));
 			
-			HashSet<Topic> topics = new HashSet<Topic>();
-			Topic t = null;
-			
 			while (r.hasNext() == true) {
 				r.next();
 				if (r.isStartElement() == true) {
-					if (r.getLocalName().equals(Tags.TOPIC.getTag())) {
+					if (r.getLocalName().equals(Tags.TOPICS.getTag())) {
+						// set hashset of topics
+						topics = new HashSet<Topic>();
+						
+					} else if (r.getLocalName().equals(Tags.TOPIC.getTag())) {
 						// new topic
 						t = new Topic();
 						// set lang
@@ -48,7 +52,9 @@ public class IOUtils {
 						t.setNarrative(r.getElementText());
 						
 					}
-					// TODO set close of TOPic and add topicObject to the topics hashset
+				}
+				if (r.isEndElement() && r.getLocalName().equals(Tags.TOPIC.getTag())) {
+					topics.add(t);
 				}
 			}
 			
@@ -58,6 +64,8 @@ public class IOUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return topics;
 	}
 	
     /**
