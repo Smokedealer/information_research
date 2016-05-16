@@ -13,60 +13,6 @@ import cz.zcu.kiv.nlp.ir.trec.data.Topic;
  * @author tigi
  */
 public class IOUtils {
-
-	public static HashSet<Topic> nactiXML(String soubor) {
-		HashSet<Topic> topics = null;
-		Topic t = null;
-
-		try {
-			XMLInputFactory f = XMLInputFactory.newInstance();
-			XMLStreamReader r = f.createXMLStreamReader(new FileInputStream(soubor));
-			
-			while (r.hasNext() == true) {
-				r.next();
-				if (r.isStartElement() == true) {
-					if (r.getLocalName().equals(Tags.TOPICS.getTag())) {
-						// set hashset of topics
-						topics = new HashSet<Topic>();
-						
-					} else if (r.getLocalName().equals(Tags.TOPIC.getTag())) {
-						// new topic
-						t = new Topic();
-						// set lang
-						t.setLang(r.getAttributeValue(null, Tags.LANG.getTag()));
-						
-					} else if (r.getLocalName().equals(Tags.IDENTIFIER.getTag())) {
-						// set identifier
-						t.setId(r.getElementText());
-						
-					} else if (r.getLocalName().equals(Tags.TITLE.getTag())) {
-						// set title
-						t.setTitle(r.getElementText());
-						
-					} else if (r.getLocalName().equals(Tags.DESCRIPTION.getTag())) {
-						// set description
-						t.setDescription(r.getElementText());
-						
-					} else if (r.getLocalName().equals(Tags.NARRATIVE.getTag())) {
-						// set narrative
-						t.setNarrative(r.getElementText());
-						
-					}
-				}
-				if (r.isEndElement() && r.getLocalName().equals(Tags.TOPIC.getTag())) {
-					topics.add(t);
-				}
-			}
-			
-		} catch(XMLStreamException e) {
-			System.out.println("Chyba pri cteni XML souboru " + soubor + ".");
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return topics;
-	}
 	
     /**
      * Read lines from the stream; lines are trimmed and empty lines are ignored.
