@@ -1,24 +1,22 @@
 package cz.zcu.kiv.nlp.ir.preprocessing;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 public class Preprocessing {
 
 	static Stemming stemmer = new CzechStemmerAgressive();
 
-    public static Set<String> run(List<Document> docs, Set<String> stopwords) {
+    public static HashMap<String, TermInfo> run(List<Document> docs, Set<String> stopwords) {
         
-    	Set<String> words = new HashSet<String>();
-        long numberOfWords = 0;
-        long numberOfChars = 0;
-        long numberOfDocuments = 0;
+        HashMap<String, TermInfo> dictionary = new HashMap<String, TermInfo>();
+        
         for (Document doc : docs) {
-            numberOfDocuments++;
             String line = doc.getText();
 
             // to lower case
@@ -27,28 +25,45 @@ public class Preprocessing {
             line = Tokenizer.removeAccents(line);
 
             for (String token : Tokenizer.tokenize(line, Tokenizer.defaultRegex)) {
+            	controlToken(dictionary, token, doc.getId(), stopwords);
+            	
             	// do stemming
             	token = stemmer.stem(token);
+            	controlToken(dictionary, token, doc.getId(), stopwords);
+            	
             	// remove accents after stemming
             	token = Tokenizer.removeAccents(token);
-
-            	numberOfWords++;
-                numberOfChars += token.length();
-                words.add(token);
+            	controlToken(dictionary, token, doc.getId(), stopwords);
             }
         }
-        System.out.println("numberOfWords: " + numberOfWords);
-        System.out.println("numberOfUniqueWords: " + words.size());
-        System.out.println("numberOfDocuments: " + numberOfDocuments);
-        System.out.println("average document char length: " + numberOfChars / (0.0 + numberOfDocuments));
-        System.out.println("average word char length: " + numberOfChars / (0.0 + numberOfWords));
-
-
-        Object[] a = words.toArray();
-        Arrays.sort(a);
-        //System.out.println(Arrays.toString(a));
         
-        return words;
+        return dictionary;
+    }
+    
+    private static void controlToken(HashMap<String, TermInfo> dictionary, String token, String docID, Set<String> stopwords) {
+    	
+    	if (!stopwords.contains(token)) {
+    		return;
+    	}
+
+    	if (!dictionary.containsKey(token)) {
+    		// TOKEN IS NEW
+    		// create postings
+    		Set<String> postings = new HashSet<String>();
+    		postings.add(docID);
+    		
+    		// create term
+    		TermInfo term = new TermInfo(1, postings);    		
+    		dictionary.put(token, term);
+    		
+    	} else {
+    		// DICTIONARY CONTAINS TOKEN
+    		TermInfo term = dictionary.get(token);
+    		term.setCountNextValue();
+    		term.getPostings().add(docID);
+    		
+    	}
+    	
     }
 	
 }
