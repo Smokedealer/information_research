@@ -40,10 +40,11 @@ public class Preprocessing {
         return dictionary;
     }
     
-    private static void controlToken(HashMap<String, TermInfo> dictionary, String token, String docID, Set<String> stopwords) {
+    private static HashMap<String, TermInfo> controlToken(HashMap<String, TermInfo> dictionary, String token, String docID, Set<String> stopwords) {
     	
-    	if (!stopwords.contains(token)) {
-    		return;
+    	if (stopwords.contains(token)) {
+    		// TOKEN IS FROM STOPWORDS
+    		return null;
     	}
 
     	if (!dictionary.containsKey(token)) {
@@ -63,6 +64,8 @@ public class Preprocessing {
     		term.getPostings().add(docID);
     		
     	}
+    	
+    	return dictionary;
     	
     }
 	

@@ -31,4 +31,16 @@ public class TermInfo {
 	public void setCountNextValue() {
 		this.count++;
 	}
+
+	@Override
+	public String toString() {
+		String occuring = "";
+		
+		for (String posting : postings) {
+			occuring += posting + ",";
+		}
+		
+		return count + ";" + occuring;
+	}
+	
 }

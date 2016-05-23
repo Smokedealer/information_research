@@ -1,7 +1,4 @@
 interface/stopwords
-interface/trec_eval.8.1
-interface/TREC
 interface/.classpath
 interface/.project
 interface/.settings
-interface/target
