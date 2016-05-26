@@ -54,7 +54,7 @@ public class Preprocessing {
     		postings.add(docID);
     		
     		// create term
-    		TermInfo term = new TermInfo(1, postings);    		
+    		TermInfo term = new TermInfo(token, 1, postings);    		
     		dictionary.put(token, term);
     		
     	} else {

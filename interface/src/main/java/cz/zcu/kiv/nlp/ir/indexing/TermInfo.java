@@ -4,11 +4,13 @@ import java.util.Set;
 
 public class TermInfo {
 
+	private String term;
 	private int count;
 	private Set<String> postings;
 	
-	public TermInfo(int count, Set<String> postings) {
-		this.count = 1;
+	public TermInfo(String term, int count, Set<String> postings) {
+		this.term = term;
+		this.count = count;
 		this.postings = postings;
 	}
 
@@ -30,6 +32,14 @@ public class TermInfo {
 	
 	public void setCountNextValue() {
 		this.count++;
+	}
+	
+	public void setTerm(String term) {
+		this.term = term;
+	}
+	
+	public String getTerm() {
+		return this.term;
 	}
 
 	@Override

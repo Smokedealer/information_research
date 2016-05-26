@@ -3,9 +3,13 @@ package cz.zcu.kiv.nlp.ir;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import cz.zcu.kiv.nlp.ir.IO.LoadData;
@@ -28,7 +32,9 @@ public class App {
 		// do preprocessing, stop words, stemming, lemmatization
 		// do postings lists and dictionary
 
-		HashMap<String, TermInfo> dictionary = Preprocessing.run(documents, stopwords);
+		Map<String, TermInfo> dictionary = Preprocessing.run(documents, stopwords);
+		List<String> sortingTerms = new ArrayList<String>(dictionary.keySet()); // TODO - sort
+		Collections.sort(sortingTerms);
 		
 		// save dictionary indexes;
 //		SaveLoadIndexes.saveIndexes(dictionary);
