@@ -200,8 +200,8 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		}
 	}
 
-	public List<TermInfo> buildResults(String query) throws QueryParserException {
 // TODO (original) - public List<QueryEvalResult> buildResults(String query) throws QueryParserException {
+	public List<TermInfo> buildResults(String query) throws QueryParserException {
 		String evalResult;
 
 		try {
