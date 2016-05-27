@@ -1,24 +1,10 @@
 package cz.zcu.kiv.nlp.ir;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import cz.zcu.kiv.nlp.ir.IO.LoadData;
-import cz.zcu.kiv.nlp.ir.IO.SaveLoadIndexes;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
-import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
-import cz.zcu.kiv.nlp.ir.search.ParserEvaluator;
-import cz.zcu.kiv.nlp.ir.trec.IOUtils;
-import cz.zcu.kiv.nlp.ir.trec.data.Document;
+import cz.zcu.kiv.nlp.ir.searching.ParserEvaluator;
 
 public class App {
 
@@ -39,7 +25,7 @@ public class App {
 
 		// TODO - only for test
 		ParserEvaluator parser = new ParserEvaluator(new HashMap<String,TermInfo>());
-		String query = "auto AND pes kočka dům AND NOT komín";
+		String query = "(auto AND pes kočka) OR dům";
 		String evalResult = parser.evaluate(query);
 
 
