@@ -61,7 +61,7 @@ public class SaveLoadIndexes {
 					if (!data[1].isEmpty()) {
 						String key = data[0];
 						String [] postingsArray = data[2].split(",");
-						TermInfo termInfo = new TermInfo(Integer.parseInt(data[1]), new HashSet<String>(Arrays.asList(postingsArray)));
+						TermInfo termInfo = new TermInfo(key, Integer.parseInt(data[1]), new HashSet<String>(Arrays.asList(postingsArray)));
 						dictionary.put(key, termInfo);
 					}
 				}

@@ -16,6 +16,7 @@ import cz.zcu.kiv.nlp.ir.IO.LoadData;
 import cz.zcu.kiv.nlp.ir.IO.SaveLoadIndexes;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
+import cz.zcu.kiv.nlp.ir.search.ParserEvaluator;
 import cz.zcu.kiv.nlp.ir.trec.IOUtils;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
@@ -25,17 +26,23 @@ public class App {
 
 		// load data and stopwords
 
-		List<Document> documents = LoadData.loadData();
-		List<String> words = IOUtils.readLines(new FileInputStream(new File("./stopwords/stopwords.txt")));
-		Set<String> stopwords = new HashSet<String>(words);
+//		List<Document> documents = LoadData.loadData();
+//		List<String> words = IOUtils.readLines(new FileInputStream(new File("./stopwords/stopwords.txt")));
+//		Set<String> stopwords = new HashSet<String>(words);
 		
 		// do preprocessing, stop words, stemming, lemmatization
 		// do postings lists and dictionary
 
-		Map<String, TermInfo> dictionary = Preprocessing.run(documents, stopwords);
-		List<String> sortingTerms = new ArrayList<String>(dictionary.keySet()); // TODO - sort
-		Collections.sort(sortingTerms);
-		
+//		Map<String, TermInfo> dictionary = Preprocessing.run(documents, stopwords);
+//		List<String> sortingTerms = new ArrayList<String>(dictionary.keySet()); // TODO - sort
+//		Collections.sort(sortingTerms);
+
+		// TODO - only for test
+		ParserEvaluator parser = new ParserEvaluator(new HashMap<String,TermInfo>());
+		String query = "auto AND pes kočka dům AND NOT komín";
+		String evalResult = parser.evaluate(query);
+
+
 		// save dictionary indexes;
 //		SaveLoadIndexes.saveIndexes(dictionary);
 //		HashMap<String, TermInfo> dictionary = SaveLoadIndexes.loadIndexes();
