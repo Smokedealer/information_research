@@ -16,12 +16,13 @@ public class Searcher {
     }
 
     public List<TermInfo> search (String str) {
-        String [] terms = str.split(Tokenizer.defaultRegex);
+        String [] terms = Tokenizer.tokenize(str.toLowerCase().trim(), Tokenizer.defaultRegex);
         List<TermInfo> searchResults = new ArrayList<TermInfo>();
 
         for (int i = 0; i < terms.length; i++) {
             if (dictionary.containsKey(terms[i])) {
                 searchResults.add(dictionary.get(terms[i]));
+                System.out.println("Nasel jsem shodu: " + terms[i]);
             }
         }
 

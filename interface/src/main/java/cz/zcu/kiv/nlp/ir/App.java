@@ -17,7 +17,7 @@ import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 public class App {
 
-	public static final String QEURY = "(ahoj AND nazdar) OR dobry den";
+	public static final String QEURY = "hodnotil AND nove";
 
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
@@ -31,7 +31,9 @@ public class App {
 
 		// create searcher and do boolean searching
 		// searching with boolean expressions
-		Set<String> results = (new ParserEvaluator(new Searcher(dictionary))).buildResults(QEURY);
+		Searcher search = new Searcher(dictionary);
+		ParserEvaluator pe = new ParserEvaluator(search);
+		Set<String> results = (pe).buildResults(QEURY);
 
 //		List<Set<String>> docsResult = new List<Set<String>>();
 //		Map<String, Integer> termFrequencyInDocs = new Map<String, Integer>();

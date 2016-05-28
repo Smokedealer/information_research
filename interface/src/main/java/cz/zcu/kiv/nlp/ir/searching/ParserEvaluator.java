@@ -75,6 +75,12 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 			e2 = this.SEARCHER.search(o2);
 
 			this.TMP_RESULTS.remove(this.TMP_RESULTS.size() - 1);
+		} else if (o2.isEmpty() && !this.TMP_RESULTS.isEmpty()) {
+			// only second operand, apply operation to new result list and list from stack
+			e2 = this.TMP_RESULTS.get(this.TMP_RESULTS.size() - 1);
+			e1 = this.SEARCHER.search(o1);
+
+			this.TMP_RESULTS.remove(this.TMP_RESULTS.size() - 1);
 		}
 
 		if (e1 == null || e2 == null) {
@@ -93,21 +99,21 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		return "";
 	}
 	
-	private void excludeLists(List<TermInfo> e1, List<TermInfo> e2) {
+	protected void excludeLists(List<TermInfo> e1, List<TermInfo> e2) {
 		// gather docs that cant match docs in first set
 		Set<String> ex = new HashSet<String>();
 
-		for (TermInfo tr : e2) {
-			ex.addAll(tr.getPostings());
+		for (TermInfo sr : e2) {
+			ex.addAll(sr.getPostings());
 		}
 
-		Iterator<TermInfo> trit = e1.iterator();
+		Iterator<TermInfo> srit = e1.iterator();
 
 		// remove doc references
-		while (trit.hasNext()) {
+		while (srit.hasNext()) {
 
-			TermInfo tr = trit.next();
-			Iterator<String> it = tr.getPostings().iterator();
+			TermInfo sr = srit.next();
+			Iterator<String> it = sr.getPostings().iterator();
 
 			while (it.hasNext()) {
 				String doc = it.next();
@@ -118,8 +124,8 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 			}
 
 			// remove searching result if it has no documents
-			if (tr.getPostings().isEmpty()) {
-				trit.remove();
+			if (sr.getPostings().isEmpty()) {
+				srit.remove();
 			}
 		}
 
@@ -132,7 +138,6 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 	}
 	
 	private void intersectLists(List<TermInfo> e1, List<TermInfo> e2) {
-		// TODO - like BooleanRetrieval
 		if (e1.isEmpty() || e2.isEmpty()) {
 			this.TMP_RESULTS.addAll(new ArrayList<List<TermInfo>>());
 
@@ -200,10 +205,12 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		}
 	}
 
-// TODO (original) - public List<QueryEvalResult> buildResults(String query) throws QueryParserException {
+
 	public Set<String> buildResults(String query) throws QueryParserException {
 		String evalResult;
 
+		System.out.println("Size of TMP_RESULTS: " + TMP_RESULTS.size());
+		
 		try {
 			// eval query and build intermediate result list
 			evalResult = this.evaluate(query);
