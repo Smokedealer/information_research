@@ -7,7 +7,7 @@ import com.fathzer.soft.javaluator.BracketPair;
 import com.fathzer.soft.javaluator.Operator;
 import com.fathzer.soft.javaluator.Parameters;
 
-import cz.zcu.kiv.nlp.ir.Exceptions.QueryParserException;
+import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 
 public class ParserEvaluator extends AbstractEvaluator<String> {
@@ -201,7 +201,7 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 	}
 
 // TODO (original) - public List<QueryEvalResult> buildResults(String query) throws QueryParserException {
-	public List<TermInfo> buildResults(String query) throws QueryParserException {
+	public Set<String> buildResults(String query) throws QueryParserException {
 		String evalResult;
 
 		try {
@@ -221,8 +221,12 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 					+ "the query, most likely a missing operand for a boolean operator");
 		}
 
-		return this.TMP_RESULTS.get(0);
-		// TODO - do merge of list of results postings!!!
-//	TODO (original) - return QueryResultMerger.merge(this.TMP_RESULTS.get(0));
+		return mergeResults(this.TMP_RESULTS.get(0));
+	}
+
+	private Set<String> mergeResults (List<TermInfo> results) {
+		Set<String> finalSetOfDocsID = new HashSet<String>();
+		for (TermInfo term : results) finalSetOfDocsID.addAll(term.getPostings());
+        return finalSetOfDocsID;
 	}
 }

@@ -5,10 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-import cz.zcu.kiv.nlp.ir.Exceptions.QueryParserException;
-import cz.zcu.kiv.nlp.ir.IO.LoadData;
+import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
+import cz.zcu.kiv.nlp.ir.io.LoadData;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
+import cz.zcu.kiv.nlp.ir.ranking.Ranker;
 import cz.zcu.kiv.nlp.ir.searching.ParserEvaluator;
 import cz.zcu.kiv.nlp.ir.searching.Searcher;
 import cz.zcu.kiv.nlp.ir.trec.IOUtils;
@@ -16,33 +17,29 @@ import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 public class App {
 
+	public static final String QEURY = "(ahoj AND nazdar) OR dobry den";
+
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
 		// load data and stopwords
-		List<Document> documents = LoadData.loadData();
-		List<String> words = IOUtils.readLines(new FileInputStream(new File("./stopwords/stopwords.txt")));
-		Set<String> stopwords = new HashSet<String>(words);
-		
+		Map<String, Document> documents = LoadData.loadData();
+
 		// do preprocessing, take out stop words, do stemming, do lemmatization
 		// do postings lists and dictionary
-		Map<String, TermInfo> dictionary = Preprocessing.run(documents, stopwords);
-//		List<String> sortingTerms = new ArrayList<String>(dictionary.keySet()); // TODO - sort
-//		Collections.sort(sortingTerms);
+		Map<String, TermInfo> dictionary = Preprocessing.run(documents,
+				new HashSet<String>(IOUtils.readLines(new FileInputStream(new File("./stopwords/stopwords.txt")))));
 
 		// create searcher and do boolean searching
-		Searcher search = new Searcher(dictionary);
-		ParserEvaluator parser = new ParserEvaluator(search);
-		List<TermInfo> results = parser.buildResults("(ahoj AND nazdar) OR dobry den");
+		// searching with boolean expressions
+		Set<String> results = (new ParserEvaluator(new Searcher(dictionary))).buildResults(QEURY);
 
-		System.out.println("Konec");
+//		List<Set<String>> docsResult = new List<Set<String>>();
+//		Map<String, Integer> termFrequencyInDocs = new Map<String, Integer>();
+//		Set<String> docsContainsTerm = new Set<String>();
 
-		// TODO - only for test
-//		ParserEvaluator parser = new ParserEvaluator(searcher);
-//		String query = "(auto AND pes kočka) OR dům";
-//		String evalResult = parser.evaluate(query);
+		// TODO - indexing data, analyzation for czech lang.
+		Ranker ranker = new Ranker(documents, results, QEURY);
 
-		// TODO - indexing data, analyzation for czech lang., save/load index, searching with boolean expressions
-		
 	}
 	
 }

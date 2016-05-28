@@ -1,4 +1,4 @@
-package cz.zcu.kiv.nlp.ir.Exceptions;
+package cz.zcu.kiv.nlp.ir.exceptions;
 
 /**
  * Created by dzejkob23 on 27.05.16.

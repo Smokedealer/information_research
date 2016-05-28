@@ -1,9 +1,6 @@
 package cz.zcu.kiv.nlp.ir.preprocessing;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
@@ -12,28 +9,29 @@ public class Preprocessing {
 
 	static Stemming stemmer = new CzechStemmerAgressive();
 
-    public static HashMap<String, TermInfo> run(List<Document> docs, Set<String> stopwords) {
+    public static HashMap<String, TermInfo> run(Map<String, Document> docs, Set<String> stopwords) {
         
         HashMap<String, TermInfo> dictionary = new HashMap<String, TermInfo>();
-        
-        for (Document doc : docs) {
-            String line = doc.getText();
+
+		for (Map.Entry<String, Document> entry : docs.entrySet()) {
+            String line = entry.getValue().getText();
 
             // to lower case
             line = line.toLowerCase();
             // remove accents before stemming
             line = Tokenizer.removeAccents(line);
+			String[] tokenizeResult = Tokenizer.tokenize(line, Tokenizer.defaultRegex);
 
-            for (String token : Tokenizer.tokenize(line, Tokenizer.defaultRegex)) {
-            	controlToken(dictionary, token, doc.getId(), stopwords);
+            for (String token : tokenizeResult) {
+            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
             	
             	// do stemming
             	token = stemmer.stem(token);
-            	controlToken(dictionary, token, doc.getId(), stopwords);
+            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
             	
             	// remove accents after stemming
             	token = Tokenizer.removeAccents(token);
-            	controlToken(dictionary, token, doc.getId(), stopwords);
+            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
             }
         }
         
