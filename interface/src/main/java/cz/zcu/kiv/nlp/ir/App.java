@@ -33,13 +33,12 @@ public class App {
 		// searching with boolean expressions
 		Set<String> results = (new ParserEvaluator(new Searcher(dictionary))).buildResults(QEURY);
 
-//		List<Set<String>> docsResult = new List<Set<String>>();
-//		Map<String, Integer> termFrequencyInDocs = new Map<String, Integer>();
-//		Set<String> docsContainsTerm = new Set<String>();
+		// indexing data
+		Map<String, Vector<Double>> tfidf_vectors = (new Ranker(documents, results, QEURY)).weightTfIdfDocs();
 
-		// TODO - indexing data, analyzation for czech lang.
-		Ranker ranker = new Ranker(documents, results, QEURY);
-
+		// TODO - analyzation for czech lang.
 	}
 	
 }
+// TODO - tf idf => 1 + log ([kolikrat se vyskytl v dokumentu]) *
+// TODO - log(1 + [kolik dokumentu je celkem]/ ([v kolika dokumentech byl term] + 1))

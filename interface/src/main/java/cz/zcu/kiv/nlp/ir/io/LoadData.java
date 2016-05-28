@@ -30,7 +30,7 @@ public class LoadData {
         }
 
         Map<String, Document> map = new HashMap<String, Document>();
-        for (Document doc : documents) map.put(doc.getId(),doc);
+        for (Document doc : documents) map.put(doc.getId(), doc);
 
         System.out.println("Documents: " + documents.size());
         return map;

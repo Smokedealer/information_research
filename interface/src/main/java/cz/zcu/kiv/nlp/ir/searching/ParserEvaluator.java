@@ -77,6 +77,10 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 			this.TMP_RESULTS.remove(this.TMP_RESULTS.size() - 1);
 		}
 
+		if(o1.isEmpty() && !this.TMP_RESULTS.isEmpty()) {
+
+		}
+
 		if (e1 == null || e2 == null) {
 			this.TMP_RESULTS.addAll(new ArrayList<List<TermInfo>>());
 			return "";

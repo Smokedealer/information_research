@@ -1,12 +1,8 @@
-
 package cz.zcu.kiv.nlp.ir.ranking;
 
-import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.preprocessing.Tokenizer;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
-import cz.zcu.kiv.nlp.ir.trec.data.ResultImpl;
 
-import java.sql.Array;
 import java.util.*;
 
 /**
@@ -25,7 +21,7 @@ public class Ranker {
         this.DOCUMENTS = documents;
     }
 
-    public void computeWeightOfQueryAccordingDocs () {
+    public Map<String, Vector<Double>> weightTfIdfDocs() {
         Map<String, Map<String, Integer>> termFrequencyInDocs = new HashMap<String, Map<String, Integer>>();
         Map<String, Set<String>> docsContainsTerm = new HashMap<String, Set<String>>();
 
@@ -71,12 +67,15 @@ public class Ranker {
         // which docs contains term - docsContainsTerm
         int sumaDocs = RESULTS.size();
 
-        // TODO - call method for computing tf_idf
+        // call method for computing tf_idf
+        return computeTfIdf(termFrequencyInDocs, docsContainsTerm, sumaDocs);
     }
 
-    private void computeTfIdf (Map<String, Map<String, Integer>> termFrequencyInDocs,
+    private Map<String, Vector<Double>> computeTfIdf (Map<String, Map<String, Integer>> termFrequencyInDocs,
                                Map<String, Set<String>> docsContainsTerm,
                                int sumaDocs) {
+
+        Map<String, Vector<Double>> tfIdf_vectors = new HashMap<String, Vector<Double>>();
 
         for (Map.Entry<String, Map<String, Integer>> doc : termFrequencyInDocs.entrySet()) {
 
@@ -84,22 +83,26 @@ public class Ranker {
             String [] terms = termFrequencyInDocs.keySet().toArray(new String [termFrequencyInDocs.keySet().size()]);
             Arrays.sort(terms);
 
-            // tf-idf vector
-            Map<String, Double []> tfIdf_vectors = new HashMap<String, Double []>();
+            Vector<Double> tfidf = new Vector<Double>();
 
             for (String term : terms) {
                 Double tfTerm = 1 + Math.log10(termFrequencyInDocs.get(doc.getKey()).get(term));
                 Double idfTerm = Math.log10(1 + sumaDocs / docsContainsTerm.get(doc.getKey()).size());
 
-                // TODO - compute tf-idf
-                // TODO - save value to the Vector
-                // TODO - return the right values
+                // compute tf-idf
+                // save value to the Vector
+                tfidf.add(tfTerm * idfTerm);
             }
+
+            tfIdf_vectors.put(doc.getKey(), tfidf);
         }
+
+        return tfIdf_vectors;
 
     }
 
     private Map<String, Integer> removeBooleanOperators (Map<String, Integer> frequency) {
+
         if (frequency.containsKey("AND")) {
             frequency.remove("AND");
         }
@@ -113,6 +116,4 @@ public class Ranker {
         return frequency;
     }
 
-    // TODO - tf idf => 1 + log ([kolikrat se vyskytl v dokumentu]) *
-    // TODO - log(1 + [kolik dokumentu je celkem]/ ([v kolika dokumentech byl term] + 1))
 }
