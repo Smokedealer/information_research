@@ -9,6 +9,8 @@ import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.io.LoadData;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
+import cz.zcu.kiv.nlp.ir.ranking.Evaluator;
+import cz.zcu.kiv.nlp.ir.ranking.Hit;
 import cz.zcu.kiv.nlp.ir.ranking.Ranker;
 import cz.zcu.kiv.nlp.ir.searching.ParserEvaluator;
 import cz.zcu.kiv.nlp.ir.searching.Searcher;
@@ -17,7 +19,7 @@ import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 public class App {
 
-	public static final String QEURY = "hodnotil AND nove";
+	public static final String QEURY = "hodnotil OR nové";
 
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
@@ -56,12 +58,27 @@ public class App {
 		// indexing data
 		final long startIndexing = System.currentTimeMillis();
 		Ranker ranker = new Ranker(documents, results, QEURY);
-		Map<String, Vector<Double>> tfidf_vectors = ranker.weightTfIdfDocs();
+		Map<String, Vector<Double>> resultsWeight = ranker.weightTfIdfDocs();
+		Vector<Double> queryWeight = ranker.weightTfIdfQuery();
 
 		// TIME - Indexing
 		final long indexing = System.currentTimeMillis();
 		System.out.println("Time - indexing: " + ((indexing - startIndexing) / 1000) / 60 + " minut" +
 				" " + ((indexing - startIndexing) / 1000) % 60 + " sekund " + ((indexing - startIndexing) % 1000) + " milisekund"  );
+
+		// evaluation
+		final long startEvaluation = System.currentTimeMillis();
+		Evaluator eval = new Evaluator(resultsWeight, queryWeight);
+		List<Hit> hits = eval.getAllSortedHits();
+
+		// TIME - Evaluation
+		final long evaluation = System.currentTimeMillis();
+		System.out.println("Time - evaluation: " + ((evaluation - startEvaluation) / 1000) / 60 + " minut" +
+				" " + ((evaluation - startEvaluation) / 1000) % 60 + " sekund " + ((evaluation - startEvaluation) % 1000) + " milisekund"  );
+
+		for (Hit hit : hits) {
+			System.out.println(hit.getEval() + " " + hit.getDocId());
+		}
 
 		// TODO - analyzation for czech lang.
 		// TODO - implamantation for NOT query - check the computing of weight, cut values in maps by NOT configuration

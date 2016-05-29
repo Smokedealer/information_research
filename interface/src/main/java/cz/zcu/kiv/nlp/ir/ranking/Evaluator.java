@@ -16,7 +16,6 @@ public class Evaluator {
     }
 
     public List<Hit> getAllSortedHits () {
-        // TODO - need to implement
         Map<String, Double> cosinus = cosinusLength();
         List<Hit> hits = new ArrayList<Hit>();
 
@@ -24,7 +23,8 @@ public class Evaluator {
             hits.add(new Hit(entry.getKey(), entry.getValue()));
         }
 
-        return null;
+        Collections.sort(hits);
+        return hits;
     }
 
     private Map<String, Double> cosinusLength () {
