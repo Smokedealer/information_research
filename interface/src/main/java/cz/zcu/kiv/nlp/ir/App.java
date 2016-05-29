@@ -21,39 +21,50 @@ public class App {
 
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
-		// TIMER
-		final long startTime = System.currentTimeMillis();
-
 		// load data and stopwords
+		final long startLoadData = System.currentTimeMillis();
 		Map<String, Document> documents = LoadData.loadData();
+
 		// TIME - Load data
 		final long loadData = System.currentTimeMillis();
-		System.out.println("Time - load data: " + (loadData - startTime) / 1000 );
+		System.out.println("Time - load data: " + ((loadData - startLoadData) / 1000) / 60 + " minut" +
+				" " + ((loadData - startLoadData) / 1000) % 60 + " sekund " + ((loadData - startLoadData) % 1000) + " milisekund" );
 
 		// do preprocessing, take out stop words, do stemming, do lemmatization
 		// do postings lists and dictionary
+		final long startCreateDictionary = System.currentTimeMillis();
 		Map<String, TermInfo> dictionary = Preprocessing.run(documents,
 				new HashSet<String>(IOUtils.readLines(new FileInputStream(new File("/home/dzejkob23/GIT/information_research/interface/stopwords/stopwords.txt")))));
+
 		// TIME - Create dictionary
 		final long createDictionary = System.currentTimeMillis();
-		System.out.println("Time - create dictionary: " + (createDictionary - startTime - loadData) / 1000 );
+		System.out.println("Time - create dictionary: " + ((createDictionary - startCreateDictionary) / 1000) / 60 + " minut" +
+				" " + ((createDictionary - startCreateDictionary) / 1000) % 60 + " sekund " + ((createDictionary - startCreateDictionary) % 1000) + " milisekund" );
 
 		// create searcher and do boolean searching
 		// searching with boolean expressions
+		final long startQueryResults = System.currentTimeMillis();
 		Searcher search = new Searcher(dictionary);
 		ParserEvaluator pe = new ParserEvaluator(search);
 		Set<String> results = (pe).buildResults(QEURY);
+
 		// TIME - Builds results of query
 		final long queryResults = System.currentTimeMillis();
-		System.out.println("Time - build query results: " + (queryResults - createDictionary - startTime - loadData) / 1000 );
+		System.out.println("Time - build query results: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
+				" " + ((queryResults - startQueryResults) / 1000) % 60 + " sekund " + ((queryResults - startQueryResults) % 1000) + " milisekund" );
 
 		// indexing data
-		Map<String, Vector<Double>> tfidf_vectors = (new Ranker(documents, results, QEURY)).weightTfIdfDocs();
+		final long startIndexing = System.currentTimeMillis();
+		Ranker ranker = new Ranker(documents, results, QEURY);
+		Map<String, Vector<Double>> tfidf_vectors = ranker.weightTfIdfDocs();
+
 		// TIME - Indexing
 		final long indexing = System.currentTimeMillis();
-		System.out.println("Time - indexing: " + (indexing - queryResults - createDictionary - startTime - loadData) / 1000 );
+		System.out.println("Time - indexing: " + ((indexing - startIndexing) / 1000) / 60 + " minut" +
+				" " + ((indexing - startIndexing) / 1000) % 60 + " sekund " + ((indexing - startIndexing) % 1000) + " milisekund"  );
 
 		// TODO - analyzation for czech lang.
+		// TODO - implamantation for NOT query - check the computing of weight, cut values in maps by NOT configuration
 	}
 	
 }

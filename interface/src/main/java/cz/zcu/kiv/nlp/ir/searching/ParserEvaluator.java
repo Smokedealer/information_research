@@ -213,8 +213,6 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 	public Set<String> buildResults(String query) throws QueryParserException {
 		String evalResult;
 
-		System.out.println("Size of TMP_RESULTS: " + TMP_RESULTS.size());
-		
 		try {
 			// eval query and build intermediate result list
 			evalResult = this.evaluate(query);

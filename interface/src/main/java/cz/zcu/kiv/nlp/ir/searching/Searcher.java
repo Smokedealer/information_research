@@ -22,7 +22,6 @@ public class Searcher {
         for (int i = 0; i < terms.length; i++) {
             if (dictionary.containsKey(terms[i])) {
                 searchResults.add(dictionary.get(terms[i]));
-                System.out.println("Nasel jsem shodu: " + terms[i]);
             }
         }
 
