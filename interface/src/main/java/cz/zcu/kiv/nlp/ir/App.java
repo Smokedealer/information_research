@@ -21,22 +21,37 @@ public class App {
 
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
+		// TIMER
+		final long startTime = System.currentTimeMillis();
+
 		// load data and stopwords
 		Map<String, Document> documents = LoadData.loadData();
+		// TIME - Load data
+		final long loadData = System.currentTimeMillis();
+		System.out.println("Time - load data: " + (loadData - startTime) / 1000 );
 
 		// do preprocessing, take out stop words, do stemming, do lemmatization
 		// do postings lists and dictionary
 		Map<String, TermInfo> dictionary = Preprocessing.run(documents,
-				new HashSet<String>(IOUtils.readLines(new FileInputStream(new File("./stopwords/stopwords.txt")))));
+				new HashSet<String>(IOUtils.readLines(new FileInputStream(new File("/home/dzejkob23/GIT/information_research/interface/stopwords/stopwords.txt")))));
+		// TIME - Create dictionary
+		final long createDictionary = System.currentTimeMillis();
+		System.out.println("Time - create dictionary: " + (createDictionary - startTime - loadData) / 1000 );
 
 		// create searcher and do boolean searching
 		// searching with boolean expressions
 		Searcher search = new Searcher(dictionary);
 		ParserEvaluator pe = new ParserEvaluator(search);
 		Set<String> results = (pe).buildResults(QEURY);
+		// TIME - Builds results of query
+		final long queryResults = System.currentTimeMillis();
+		System.out.println("Time - build query results: " + (queryResults - createDictionary - startTime - loadData) / 1000 );
 
 		// indexing data
 		Map<String, Vector<Double>> tfidf_vectors = (new Ranker(documents, results, QEURY)).weightTfIdfDocs();
+		// TIME - Indexing
+		final long indexing = System.currentTimeMillis();
+		System.out.println("Time - indexing: " + (indexing - queryResults - createDictionary - startTime - loadData) / 1000 );
 
 		// TODO - analyzation for czech lang.
 	}

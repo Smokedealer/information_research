@@ -11,7 +11,8 @@ import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 public class LoadData {
 	
-	static final String OUTPUT_DIR = "./TREC";
+//	static final String OUTPUT_DIR = "./TREC";
+	static final String OUTPUT_DIR = "/home/dzejkob23/GIT/information_research/interface/TREC";
 	File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
 
 	public static Map<String, Document> loadData() {
