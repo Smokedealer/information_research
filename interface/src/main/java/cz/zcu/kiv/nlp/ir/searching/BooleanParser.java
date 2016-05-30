@@ -31,7 +31,7 @@ public class BooleanParser extends AbstractEvaluator<String> implements Parser {
 	private static final Parameters PARAMETERS;
 
 	/** Searcher */
-	private final Searcher SEARCHER;
+	private final Search SEARCHER;
 
 	/** Temporary results */
 	private final List<List<TermInfo>> TMP_RESULTS = new ArrayList<List<TermInfo>>();
@@ -50,7 +50,7 @@ public class BooleanParser extends AbstractEvaluator<String> implements Parser {
 	 * Constructor
 	 * @param searcher instance of searcher
      */
-	public BooleanParser (Searcher searcher) {
+	public BooleanParser (Search searcher) {
 		super(PARAMETERS);
 		this.SEARCHER = searcher;
 	}

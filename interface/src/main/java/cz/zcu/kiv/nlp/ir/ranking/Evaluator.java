@@ -1,6 +1,7 @@
 package cz.zcu.kiv.nlp.ir.ranking;
 
 import cz.zcu.kiv.nlp.ir.trec.data.Result;
+import cz.zcu.kiv.nlp.ir.trec.data.ResultImpl;
 
 import java.util.*;
 
@@ -34,7 +35,10 @@ public class Evaluator {
         List<Result> hits = new ArrayList<Result>();
 
         for (Map.Entry<String, Double> entry : cosinus.entrySet()) {
-            hits.add(new Hit(entry.getKey(), entry.getValue()));
+            ResultImpl ri = new ResultImpl();
+            ri.setDocumentID(entry.getKey());
+            ri.setScore(Float.parseFloat(Double.toString(entry.getValue())));
+            hits.add(ri);
         }
 
 
@@ -51,7 +55,7 @@ public class Evaluator {
 
         for (Result hit : hits) {
             rank++;
-            ((Hit) hit).setRank(rank);
+            ((ResultImpl) hit).setRank(rank);
         }
 
         return hits;

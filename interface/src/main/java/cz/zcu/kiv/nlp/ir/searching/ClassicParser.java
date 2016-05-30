@@ -17,7 +17,7 @@ import java.util.Set;
 public class ClassicParser implements Parser {
 
     /** Searcher */
-    private final Searcher SEARCH;
+    private final Search SEARCH;
 
     /** Temporary results */
     private final List<List<TermInfo>> TMP_REUSLTS = new ArrayList<List<TermInfo>>();
@@ -26,7 +26,7 @@ public class ClassicParser implements Parser {
      * Constructor
      * @param search instace of searcher
      */
-    public ClassicParser (Searcher search) {
+    public ClassicParser (Search search) {
         this.SEARCH = search;
     }
 

@@ -1,12 +1,10 @@
 package cz.zcu.kiv.nlp.ir.ranking;
 
-import cz.zcu.kiv.nlp.ir.preprocessing.Tokenizer;
-import cz.zcu.kiv.nlp.ir.trec.Searcher;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 import java.util.*;
 
-import static cz.zcu.kiv.nlp.ir.searching.Searcher.queryPreprocessing;
+import static cz.zcu.kiv.nlp.ir.searching.Search.queryPreprocessing;
 
 /**
  * Class for computing rank
@@ -42,7 +40,6 @@ public class Ranker {
         Map<String, Integer> termFrequencyInQuery = new HashMap<String, Integer>();
         Vector<Double> weightVector = new Vector<Double>();
 
-//        String [] queryParse = Tokenizer.tokenize(QUERY, Tokenizer.defaultRegex);
         String [] queryParse = queryPreprocessing(QUERY);
         for (String word : queryParse) {
             if (!word.equals("AND") && !word.equals("OR") && !word.equals("NOT")) {

@@ -13,7 +13,7 @@ import java.util.*;
  * @author Jakub Zíka
  * @version 1.3
  */
-public class Searcher {
+public class Search {
 
     /** Dictionary */
     Map<String, TermInfo> dictionary = null;
@@ -22,7 +22,7 @@ public class Searcher {
      * Constructor
      * @param dictionary dictionary
      */
-    public Searcher (Map<String, TermInfo> dictionary) {
+    public Search (Map<String, TermInfo> dictionary) {
         this.dictionary = dictionary;
     }
 

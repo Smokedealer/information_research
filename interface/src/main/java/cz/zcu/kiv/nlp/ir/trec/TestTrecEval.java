@@ -70,6 +70,7 @@ public class TestTrecEval {
             e.printStackTrace();
         }
 
+        index.index(documents);
         log.info("Documents: " + documents.size());
 
         List<String> lines = new ArrayList<String>();

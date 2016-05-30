@@ -4,7 +4,6 @@ import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
 import cz.zcu.kiv.nlp.ir.ranking.Evaluator;
-import cz.zcu.kiv.nlp.ir.ranking.Hit;
 import cz.zcu.kiv.nlp.ir.ranking.Ranker;
 import cz.zcu.kiv.nlp.ir.searching.BooleanParser;
 import cz.zcu.kiv.nlp.ir.searching.ClassicParser;
@@ -46,7 +45,7 @@ public class Index implements Indexer, Searcher {
         // create searcher and do boolean searching
         // searching with boolean expressions
         final long startQueryResults = System.currentTimeMillis();
-        cz.zcu.kiv.nlp.ir.searching.Searcher search = new cz.zcu.kiv.nlp.ir.searching.Searcher(DICTIONARY);
+        cz.zcu.kiv.nlp.ir.searching.Search search = new cz.zcu.kiv.nlp.ir.searching.Search(DICTIONARY);
 
         ClassicParser cp;
         BooleanParser bp;
