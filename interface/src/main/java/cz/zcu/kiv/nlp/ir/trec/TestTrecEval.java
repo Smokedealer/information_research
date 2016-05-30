@@ -1,5 +1,6 @@
 package cz.zcu.kiv.nlp.ir.trec;
 
+import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 import cz.zcu.kiv.nlp.ir.trec.data.DocumentImpl;
 import cz.zcu.kiv.nlp.ir.trec.data.Result;
@@ -48,7 +49,7 @@ public class TestTrecEval {
         Logger.getRootLogger().setLevel(Level.INFO);
     }
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException, QueryParserException {
         final File trecRelevanceFile = new File(OUTPUT_DIR + "/AH-CLEF2007_cs.xml");
         configureLogger();
 

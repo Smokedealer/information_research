@@ -1,32 +1,66 @@
 package cz.zcu.kiv.nlp.ir.ranking;
 
+import cz.zcu.kiv.nlp.ir.trec.data.Result;
+
 import java.util.*;
 
 /**
- * Created by dzejkob23 on 29.5.16.
+ * Class evaluate results after searching according query
  */
 public class Evaluator {
 
+    /** Weight of results */
     private Map<String, Vector<Double>>  resultsWeight;
+
+    /** Weight of query */
     private Vector<Double> queryWeight;
 
+    /**
+     * Constructor
+     * @param resultsWeight weight of result
+     * @param queryWeight weight of qeury
+     */
     public Evaluator (Map<String, Vector<Double>>  resultsWeight, Vector<Double> queryWeight) {
         this.resultsWeight = resultsWeight;
         this.queryWeight = queryWeight;
     }
 
-    public List<Hit> getAllSortedHits () {
+    /**
+     * Return sorted hits
+     * @return sorted hits
+     */
+    public List<Result> getAllSortedHits () {
         Map<String, Double> cosinus = cosinusLength();
-        List<Hit> hits = new ArrayList<Hit>();
+        List<Result> hits = new ArrayList<Result>();
 
         for (Map.Entry<String, Double> entry : cosinus.entrySet()) {
             hits.add(new Hit(entry.getKey(), entry.getValue()));
         }
 
-        Collections.sort(hits);
+
+        Comparator<Result> cmp = new Comparator<Result>() {
+            public int compare(Result o1, Result o2) {
+                if (o1.getScore() > o2.getScore()) return -1;
+                if (o1.getScore() == o2.getScore()) return 0;
+                return 1;
+            }
+        };
+
+        Collections.sort(hits, cmp);
+        int rank = 0;
+
+        for (Result hit : hits) {
+            rank++;
+            ((Hit) hit).setRank(rank);
+        }
+
         return hits;
     }
 
+    /**
+     * Compute cosinus length
+     * @return map with cosinus
+     */
     private Map<String, Double> cosinusLength () {
         Map<String, Double> cosinus = new HashMap<String, Double>();
         Double queryNormalizeVector = normalizeVector(queryWeight);
@@ -42,6 +76,11 @@ public class Evaluator {
         return cosinus;
     }
 
+    /**
+     * Compute normalized vector
+     * @param v input vector
+     * @return normalized vector
+     */
     private double normalizeVector (Vector<Double> v) {
         Double result = 0.0;
 

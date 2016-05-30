@@ -9,13 +9,26 @@ import java.util.Map;
 import cz.zcu.kiv.nlp.ir.trec.SerializedDataHelper;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
+/**
+ * Class help to user load data from files
+ *
+ * @author Jakub Zíka
+ * @version 1.0
+ */
 public class LoadData {
 	
 //	static final String OUTPUT_DIR = "./TREC";
+    /** Path to TREC */
 	static final String OUTPUT_DIR = "/home/dzejkob23/GIT/information_research/interface/TREC";
-	File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
 
-	public static Map<String, Document> loadData() {
+    /** Path to czechData.bin */
+    File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
+
+    /**
+     * Load data from file
+     * @return list of documents
+     */
+	public static List<Document> loadData() {
 		File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
 
         List<Document> documents = new ArrayList<Document>();
@@ -30,11 +43,8 @@ public class LoadData {
             e.printStackTrace();
         }
 
-        Map<String, Document> map = new HashMap<String, Document>();
-        for (Document doc : documents) map.put(doc.getId(), doc);
-
         System.out.println("Documents: " + documents.size());
-        return map;
+        return documents;
 	}
 	
 	

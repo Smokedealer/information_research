@@ -1,83 +1,35 @@
 package cz.zcu.kiv.nlp.ir;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.io.LoadData;
-import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
-import cz.zcu.kiv.nlp.ir.preprocessing.Preprocessing;
-import cz.zcu.kiv.nlp.ir.ranking.Evaluator;
-import cz.zcu.kiv.nlp.ir.ranking.Hit;
-import cz.zcu.kiv.nlp.ir.ranking.Ranker;
-import cz.zcu.kiv.nlp.ir.searching.ParserEvaluator;
-import cz.zcu.kiv.nlp.ir.searching.Searcher;
-import cz.zcu.kiv.nlp.ir.trec.IOUtils;
+import cz.zcu.kiv.nlp.ir.trec.Index;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
+import cz.zcu.kiv.nlp.ir.trec.data.Result;
 
 public class App {
 
-	public static final String QEURY = "hodnotil OR nové";
+	public static final String QUERY = "vláda sestavila nový návrh";
 
 	public static void main(String [] args) throws FileNotFoundException, QueryParserException {
 
 		// load data and stopwords
 		final long startLoadData = System.currentTimeMillis();
-		Map<String, Document> documents = LoadData.loadData();
+		List<Document> documents = LoadData.loadData();
 
 		// TIME - Load data
 		final long loadData = System.currentTimeMillis();
 		System.out.println("Time - load data: " + ((loadData - startLoadData) / 1000) / 60 + " minut" +
 				" " + ((loadData - startLoadData) / 1000) % 60 + " sekund " + ((loadData - startLoadData) % 1000) + " milisekund" );
 
-		// do preprocessing, take out stop words, do stemming, do lemmatization
-		// do postings lists and dictionary
-		final long startCreateDictionary = System.currentTimeMillis();
-		Map<String, TermInfo> dictionary = Preprocessing.run(documents,
-				new HashSet<String>(IOUtils.readLines(new FileInputStream(new File("/home/dzejkob23/GIT/information_research/interface/stopwords/stopwords.txt")))));
+		Index index = new Index();
+		index.index(documents);
+		List<Result> hits = index.search(QUERY);
 
-		// TIME - Create dictionary
-		final long createDictionary = System.currentTimeMillis();
-		System.out.println("Time - create dictionary: " + ((createDictionary - startCreateDictionary) / 1000) / 60 + " minut" +
-				" " + ((createDictionary - startCreateDictionary) / 1000) % 60 + " sekund " + ((createDictionary - startCreateDictionary) % 1000) + " milisekund" );
-
-		// create searcher and do boolean searching
-		// searching with boolean expressions
-		final long startQueryResults = System.currentTimeMillis();
-		Searcher search = new Searcher(dictionary);
-		ParserEvaluator pe = new ParserEvaluator(search);
-		Set<String> results = (pe).buildResults(QEURY);
-
-		// TIME - Builds results of query
-		final long queryResults = System.currentTimeMillis();
-		System.out.println("Time - build query results: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
-				" " + ((queryResults - startQueryResults) / 1000) % 60 + " sekund " + ((queryResults - startQueryResults) % 1000) + " milisekund" );
-
-		// indexing data
-		final long startIndexing = System.currentTimeMillis();
-		Ranker ranker = new Ranker(documents, results, QEURY);
-		Map<String, Vector<Double>> resultsWeight = ranker.weightTfIdfDocs();
-		Vector<Double> queryWeight = ranker.weightTfIdfQuery();
-
-		// TIME - Indexing
-		final long indexing = System.currentTimeMillis();
-		System.out.println("Time - indexing: " + ((indexing - startIndexing) / 1000) / 60 + " minut" +
-				" " + ((indexing - startIndexing) / 1000) % 60 + " sekund " + ((indexing - startIndexing) % 1000) + " milisekund"  );
-
-		// evaluation
-		final long startEvaluation = System.currentTimeMillis();
-		Evaluator eval = new Evaluator(resultsWeight, queryWeight);
-		List<Hit> hits = eval.getAllSortedHits();
-
-		// TIME - Evaluation
-		final long evaluation = System.currentTimeMillis();
-		System.out.println("Time - evaluation: " + ((evaluation - startEvaluation) / 1000) / 60 + " minut" +
-				" " + ((evaluation - startEvaluation) / 1000) % 60 + " sekund " + ((evaluation - startEvaluation) % 1000) + " milisekund"  );
-
-		for (Hit hit : hits) {
-			System.out.println(hit.getEval() + " " + hit.getDocId());
+		for (Result hit : hits) {
+			System.out.println(hit.toString(""));
 		}
 
 		// TODO - analyzation for czech lang.

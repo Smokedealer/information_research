@@ -17,10 +17,21 @@ import java.util.Map;
 
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 
+/**
+ * Class occurs method which save inverted-index to file
+ *
+ * @author Jakub Zíka
+ * @version 1.0
+ */
 public class SaveLoadIndexes {
 
+	/** Path to file with indexes */
 	private static final String INDEXES = "./Indexes/indexes.txt";
-	
+
+	/**
+	 * Save indexes to file
+	 * @param dictionary iverted-index saved in RAM
+     */
 	public static void saveIndexes(HashMap<String, TermInfo> dictionary) {
 		
 		PrintStream printStream = null;
@@ -42,7 +53,12 @@ public class SaveLoadIndexes {
         }
 		
 	}
-	
+
+	/**
+	 * Load indexes from file
+	 * @return data structure with indexes
+	 * @throws FileNotFoundException exception if file not found
+     */
 	public static HashMap<String, TermInfo> loadIndexes() throws FileNotFoundException {
 		InputStream inputStream = new FileInputStream(INDEXES);
 		HashMap<String, TermInfo> dictionary = new HashMap<String, TermInfo>();

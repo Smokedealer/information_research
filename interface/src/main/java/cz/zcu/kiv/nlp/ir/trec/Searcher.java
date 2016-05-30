@@ -1,5 +1,6 @@
 package cz.zcu.kiv.nlp.ir.trec;
 
+import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.trec.data.Result;
 
 import java.util.List;
@@ -8,5 +9,5 @@ import java.util.List;
  * Created by Tigi on 6.1.2015.
  */
 public interface Searcher {
-    List<Result> search(String query);
+    List<Result> search(String query) throws QueryParserException;
 }

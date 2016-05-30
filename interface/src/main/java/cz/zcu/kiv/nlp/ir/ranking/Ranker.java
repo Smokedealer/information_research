@@ -1,31 +1,49 @@
 package cz.zcu.kiv.nlp.ir.ranking;
 
 import cz.zcu.kiv.nlp.ir.preprocessing.Tokenizer;
+import cz.zcu.kiv.nlp.ir.trec.Searcher;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 
 import java.util.*;
 
+import static cz.zcu.kiv.nlp.ir.searching.Searcher.queryPreprocessing;
+
 /**
- * Created by dzejkob23 on 27.05.16.
+ * Class for computing rank
  */
 public class Ranker {
 
-
+    /** Set of results */
     private final Set<String> RESULTS;
+
+    /** Map of documents */
     private final Map<String, Document> DOCUMENTS;
+
+    /** Search query */
     private final String QUERY;
 
+    /**
+     * Constructor
+     * @param documents documents
+     * @param resultDocs result documents
+     * @param query searching query
+     */
     public Ranker (Map<String, Document> documents, Set<String> resultDocs, String query) {
         this.QUERY = query;
         this.RESULTS = resultDocs;
         this.DOCUMENTS = documents;
     }
 
+    /**
+     * Compute tf-idf for query
+     * @return vector with tf-idf
+     */
     public Vector<Double> weightTfIdfQuery () {
         Map<String, Integer> termFrequencyInQuery = new HashMap<String, Integer>();
         Vector<Double> weightVector = new Vector<Double>();
 
-        String [] queryParse = Tokenizer.tokenize(QUERY, Tokenizer.defaultRegex);
+//        String [] queryParse = Tokenizer.tokenize(QUERY, Tokenizer.defaultRegex);
+        String [] queryParse = queryPreprocessing(QUERY);
         for (String word : queryParse) {
             if (!word.equals("AND") && !word.equals("OR") && !word.equals("NOT")) {
                 termFrequencyInQuery.put(word.toLowerCase(), 0);
@@ -58,6 +76,10 @@ public class Ranker {
         return weightVector;
     }
 
+    /**
+     * Compute tf-idf for documents
+     * @return vector with tf-idf
+     */
     public Map<String, Vector<Double>> weightTfIdfDocs() {
         Map<String, Map<String, Integer>> termFrequencyInDocs = new HashMap<String, Map<String, Integer>>();
         Map<String, Set<String>> docsContainsTerm = new HashMap<String, Set<String>>();
@@ -67,7 +89,7 @@ public class Ranker {
             termFrequencyInDocs.put(docId, new HashMap<String, Integer>());
             Map<String, Integer> frequency = termFrequencyInDocs.get(docId);
 
-            String [] queryParse = Tokenizer.tokenize(QUERY, Tokenizer.defaultRegex);
+            String [] queryParse = queryPreprocessing(QUERY);
             for (String word : queryParse) {
                 if (!word.equals("AND") && !word.equals("OR") && !word.equals("NOT")) {
                     frequency.put(word.toLowerCase(), 0);
@@ -84,7 +106,7 @@ public class Ranker {
                             doc.getDate() + " " +
                             doc.getTags();
 
-            String [] textArray = Tokenizer.tokenize(fullText.toLowerCase(), Tokenizer.defaultRegex);
+            String [] textArray = queryPreprocessing(fullText);
             Set<String> textSet = new HashSet<String>(Arrays.asList(textArray));
 
             // word frequency
@@ -111,6 +133,13 @@ public class Ranker {
         return computeTfIdf(termFrequencyInDocs, docsContainsTerm, sumaDocs);
     }
 
+    /**
+     * Compute angle merging query and documents tf-idf vectors
+     * @param termFrequencyInDocs term frequency in doc
+     * @param docsContainsTerm how many times term occurs in documents
+     * @param sumaDocs count of documents
+     * @return computed tf-idf
+     */
     private Map<String, Vector<Double>> computeTfIdf (Map<String, Map<String, Integer>> termFrequencyInDocs,
                                Map<String, Set<String>> docsContainsTerm,
                                int sumaDocs) {
@@ -128,20 +157,21 @@ public class Ranker {
 
                 if (doc.getValue().containsKey(term)) {
 
-                    Double tfTerm;
+                    Double tfTerm = 0.0;
                     Double idfTerm;
 
                     double termFreqInDoc = doc.getValue().get(term);
                     double termInDocs = docsContainsTerm.get(term).size();
 
-                    // TODO - check if I need this condition (termInDoc is DOUBLE)
-                    if (termInDocs != 0) {
-                        idfTerm = Math.log10(1 + sumaDocs / termInDocs);
-                    } else {
-                        idfTerm = Math.log10(1);
+                    if (termInDocs == 0) {
+                        termInDocs = 1;
                     }
 
-                    tfTerm = 1 + Math.log10(termFreqInDoc);
+                    idfTerm = Math.log10(1 + sumaDocs / termInDocs);
+
+                    if (termFreqInDoc != 0) {
+                        tfTerm = 1 + Math.log10(termFreqInDoc);
+                    }
 
                     // compute tf-idf
                     // save value to the Vector
@@ -157,6 +187,11 @@ public class Ranker {
 
     }
 
+    /**
+     * Remove boolean operators from query
+     * @param frequency map with term frequency
+     * @return updated map
+     */
     private Map<String, Integer> removeBooleanOperators (Map<String, Integer> frequency) {
 
         if (frequency.containsKey("and")) {

@@ -9,8 +9,7 @@ import java.util.regex.Pattern;
  * This class creates tokens from imported text.
  *
  * @author Jakub Zíka
- * @date 12.5. 2016
- * @version 1.0
+ * @version 1.2
  */
 public class Tokenizer {
 
@@ -19,7 +18,6 @@ public class Tokenizer {
 	
 	/**
 	 * Create tokens.
-	 * 
 	 * @param text imported text
 	 * @param regex regular expression
 	 * @return
@@ -45,7 +43,6 @@ public class Tokenizer {
 
 	/**
 	 * Removing accents.
-	 * 
 	 * @param text imported text
 	 * @return upgraded word
 	 */
@@ -55,7 +52,6 @@ public class Tokenizer {
 
     /**
      * Tokenization.
-     * 
      * @param text imported text
      * @return word after tokenization
      */

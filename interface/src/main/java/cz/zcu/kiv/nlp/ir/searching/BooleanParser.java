@@ -10,14 +10,30 @@ import com.fathzer.soft.javaluator.Parameters;
 import cz.zcu.kiv.nlp.ir.exceptions.QueryParserException;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 
-public class ParserEvaluator extends AbstractEvaluator<String> {
-	
+/**
+ * Instances of this classes represents boolean parser and searcher for queries
+ *
+ * @author Jakub Zíka
+ * @version 1.1
+ */
+public class BooleanParser extends AbstractEvaluator<String> implements Parser {
+
+	/** Operator NOT */
 	final static Operator NOT = new Operator("NOT", 1, Operator.Associativity.LEFT, 3);
+
+	/** Operator AND */
 	final static Operator AND = new Operator("AND", 2, Operator.Associativity.LEFT, 2);
+
+	/** Operator OR */
 	final static Operator OR = new Operator("OR", 2, Operator.Associativity.LEFT, 1);
 
+	/** Parsers parameters */
 	private static final Parameters PARAMETERS;
+
+	/** Searcher */
 	private final Searcher SEARCHER;
+
+	/** Temporary results */
 	private final List<List<TermInfo>> TMP_RESULTS = new ArrayList<List<TermInfo>>();
 	
 	static {
@@ -29,19 +45,23 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		
 		PARAMETERS.addExpressionBracket(BracketPair.PARENTHESES);
 	}
-	
-	public ParserEvaluator(Searcher searcher) {
+
+	/**
+	 * Constructor
+	 * @param searcher instance of searcher
+     */
+	public BooleanParser (Searcher searcher) {
 		super(PARAMETERS);
 		this.SEARCHER = searcher;
 	}
 	
 	@Override
-	protected String toValue(String str, Object arg1) {
+	protected String toValue (String str, Object arg1) {
 		return str;
 	}
 	
 	@Override
-	protected String evaluate(Operator operator, Iterator<String> operands, Object evaluationContext) {
+	protected String evaluate (Operator operator, Iterator<String> operands, Object evaluationContext) {
 		if (operator == NOT || operator == OR || operator == AND) {
 			return this.applyOperator(operator, operands.next(), operands.next());
 		}
@@ -49,6 +69,13 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		return "Unknown operand";
 	}
 
+	/**
+	 * Method apply operator on incoming operands
+	 * @param operator operator
+	 * @param o1 first operand
+	 * @param o2 second operand
+     * @return exception
+     */
 	private String applyOperator(Operator operator, String o1, String o2) {
 		List<TermInfo> e1 = null;
 		List<TermInfo> e2 = null;
@@ -102,8 +129,13 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 	
 		return "";
 	}
-	
-	protected void excludeLists(List<TermInfo> e1, List<TermInfo> e2) {
+
+	/**
+	 * Do operation NOT
+	 * @param e1 list of results
+	 * @param e2 list of results
+     */
+	protected void excludeLists (List<TermInfo> e1, List<TermInfo> e2) {
 		// gather docs that cant match docs in first set
 		Set<String> ex = new HashSet<String>();
 
@@ -135,13 +167,23 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 
 		this.TMP_RESULTS.add(e1);
 	}
-	
-	private void mergeLists(List<TermInfo> e1, List<TermInfo> e2) {
+
+	/**
+	 * Do operation AND
+	 * @param e1 list of results
+	 * @param e2 list of results
+     */
+	private void mergeLists (List<TermInfo> e1, List<TermInfo> e2) {
 		e1.addAll(e2);
 		this.TMP_RESULTS.add(e1);
 	}
-	
-	private void intersectLists(List<TermInfo> e1, List<TermInfo> e2) {
+
+	/**
+	 * Do operation AND
+	 * @param e1 list of results
+	 * @param e2 list of results
+     */
+	private void intersectLists (List<TermInfo> e1, List<TermInfo> e2) {
 		if (e1.isEmpty() || e2.isEmpty()) {
 			this.TMP_RESULTS.addAll(new ArrayList<List<TermInfo>>());
 
@@ -209,8 +251,13 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		}
 	}
 
-
-	public Set<String> buildResults(String query) throws QueryParserException {
+	/**
+	 * Build all results to one list
+	 * @param query input query
+	 * @return merged results to one
+	 * @throws QueryParserException query exception
+     */
+	public Set<String> buildResults (String query) throws QueryParserException {
 		String evalResult;
 
 		try {
@@ -233,7 +280,12 @@ public class ParserEvaluator extends AbstractEvaluator<String> {
 		return mergeResults(this.TMP_RESULTS.get(0));
 	}
 
-	private Set<String> mergeResults (List<TermInfo> results) {
+	/**
+	 * Do merge on results
+	 * @param results results
+	 * @return set with original documents IDs
+     */
+	public Set<String> mergeResults (List<TermInfo> results) {
 		Set<String> finalSetOfDocsID = new HashSet<String>();
 		for (TermInfo term : results) finalSetOfDocsID.addAll(term.getPostings());
         return finalSetOfDocsID;
