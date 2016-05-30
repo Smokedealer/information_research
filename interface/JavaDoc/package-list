@@ -1,0 +1,8 @@
+cz.zcu.kiv.nlp.ir.exceptions
+cz.zcu.kiv.nlp.ir.indexing
+cz.zcu.kiv.nlp.ir.io
+cz.zcu.kiv.nlp.ir.preprocessing
+cz.zcu.kiv.nlp.ir.ranking
+cz.zcu.kiv.nlp.ir.searching
+cz.zcu.kiv.nlp.ir.trec
+cz.zcu.kiv.nlp.ir.trec.data

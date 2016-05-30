@@ -18,9 +18,9 @@ import java.util.Map;
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 
 /**
- * Class occurs method which save inverted-index to file
+ * Class occurs method which save and load inverted-index to file
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.0
  */
 public class SaveLoadIndexes {

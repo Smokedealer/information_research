@@ -13,7 +13,7 @@ import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 /**
  * Instances of this classes represents boolean parser and searcher for queries
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.1
  */
 public class BooleanParser extends AbstractEvaluator<String> implements Parser {

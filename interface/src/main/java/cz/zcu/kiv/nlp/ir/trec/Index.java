@@ -11,8 +11,6 @@ import cz.zcu.kiv.nlp.ir.searching.Search;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
 import cz.zcu.kiv.nlp.ir.trec.data.Result;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -75,7 +73,7 @@ public class Index implements Indexer, Searcher {
 //                " " + ((evaluation - startEvaluation) / 1000) % 60 + " sekund " + ((evaluation - startEvaluation) % 1000) + " milisekund"  );
 
         final long queryResults = System.currentTimeMillis();
-        System.out.println("Time - cele to trva: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
+        System.out.println("Time - dotaz: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
                 " " + ((queryResults - startQueryResults) / 1000) % 60 + " sekund " + ((queryResults - startQueryResults) % 1000) + " milisekund" );
 
         return hits;

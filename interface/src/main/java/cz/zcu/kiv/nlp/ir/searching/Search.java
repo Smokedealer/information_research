@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Instances of this class represents searcher in documents according term
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.3
  */
 public class Search {

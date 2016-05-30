@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Class has to implements these methods about parsing
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.0
  */
 public interface Parser {

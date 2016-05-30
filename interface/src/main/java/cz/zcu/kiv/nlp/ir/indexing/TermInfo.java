@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Instaces of this class represents information about term from searching in documents
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.1
  */
 public class TermInfo {

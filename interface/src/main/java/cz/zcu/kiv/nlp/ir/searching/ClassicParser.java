@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Instances of this classes represents classic parser and searcher for queries
  *
- * @author Jakub Zíka
+ * @author Jakub Zika
  * @version 1.0
  */
 public class ClassicParser implements Parser {

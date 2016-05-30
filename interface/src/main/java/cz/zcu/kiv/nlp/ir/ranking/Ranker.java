@@ -8,6 +8,9 @@ import static cz.zcu.kiv.nlp.ir.searching.Search.queryPreprocessing;
 
 /**
  * Class for computing rank
+ *
+ * @author Jakub Zika
+ * @version 1.5
  */
 public class Ranker {
 

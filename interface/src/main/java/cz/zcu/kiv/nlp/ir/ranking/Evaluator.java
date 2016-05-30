@@ -7,6 +7,9 @@ import java.util.*;
 
 /**
  * Class evaluate results after searching according query
+ *
+ * @author Jakub Zika
+ * @version 1.2
  */
 public class Evaluator {
 

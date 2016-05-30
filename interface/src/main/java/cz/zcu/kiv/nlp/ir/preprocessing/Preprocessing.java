@@ -13,8 +13,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 /**
  * Class represents preprocessing for loaded documents
  *
- * @author Jakub Zíka
- * @cersion 1.3
+ * @author Jakub Zika
+ * @version 1.3
  */
 public class Preprocessing {
 
@@ -50,7 +50,7 @@ public class Preprocessing {
             	controlToken(dictionary, token, entry.getValue().getId());
             }
         }
-        
+
         return dictionary;
     }
 

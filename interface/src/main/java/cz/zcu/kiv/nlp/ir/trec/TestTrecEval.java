@@ -27,8 +27,7 @@ import java.util.*;
 public class TestTrecEval {
 
     static Logger log = Logger.getLogger(TestTrecEval.class);
-//    static final String OUTPUT_DIR = "./TREC";
-    static final String OUTPUT_DIR = "/home/dzejkob23/GIT/information_research/interface/TREC";
+    static final String OUTPUT_DIR = "./TREC";
 
 
     protected static void configureLogger() {
@@ -55,6 +54,7 @@ public class TestTrecEval {
         configureLogger();
 
 //        todo constructor
+        final long startQueryResults = System.currentTimeMillis();
         Index index = new Index();
 
         File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
@@ -101,6 +101,11 @@ public class TestTrecEval {
 //                log.info(line);
             }
         }
+
+        final long queryResults = System.currentTimeMillis();
+        System.out.println("Time - cele to trva: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
+                " " + ((queryResults - startQueryResults) / 1000) % 60 + " sekund " + ((queryResults - startQueryResults) % 1000) + " milisekund" );
+
         final File outputFile = new File(OUTPUT_DIR + "/results " + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + ".txt");
         IOUtils.saveFile(outputFile, lines);
         //try to run evaluation
@@ -113,14 +118,9 @@ public class TestTrecEval {
 
     private static String runTrecEval(String predictedFile) throws IOException {
 
-//        String commandLine = "./trec_eval.8.1/./trec_eval" +
-//                " ./trec_eval.8.1/czcech" +
-//                " " + predictedFile;
-
-        String commandLine =    "/home/dzejkob23/GIT/information_research/interface/trec_eval.8.1/" +
-                                "./trec_eval" +
-                                " /home/dzejkob23/GIT/information_research/interface/trec_eval.8.1/czcech" +
-                                " " + predictedFile;
+        String commandLine = "./trec_eval.8.1/./trec_eval" +
+                " ./trec_eval.8.1/czcech" +
+                " " + predictedFile;
 
         System.out.println(commandLine);
         Process process = Runtime.getRuntime().exec(commandLine);
