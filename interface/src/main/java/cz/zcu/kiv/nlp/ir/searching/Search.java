@@ -1,10 +1,12 @@
 package cz.zcu.kiv.nlp.ir.searching;
 
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
-import cz.zcu.kiv.nlp.ir.preprocessing.CzechStemmerAgressive;
-import cz.zcu.kiv.nlp.ir.preprocessing.Stemming;
-import cz.zcu.kiv.nlp.ir.preprocessing.Tokenizer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.cz.CzechAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -50,22 +52,23 @@ public class Search {
      * @return array of results after preprocessing
      */
     public static String [] queryPreprocessing (String query) {
-        Stemming stemmer = new CzechStemmerAgressive();
         List<String> terms = new ArrayList<String>();
-        String q = query.toLowerCase();
-        q = Tokenizer.removeAccents(q);
 
+        List<String> result = new ArrayList<String>();
+        CzechAnalyzer analyzer = new CzechAnalyzer(CzechAnalyzer.getDefaultStopSet());
+        try {
+            TokenStream stream  = analyzer.tokenStream(null, new StringReader(query));
+            stream.reset();
+            while (stream.incrementToken()) {
+                result.add(stream.getAttribute(CharTermAttribute.class).toString());
+            }
+            stream.close();
+        } catch (IOException e) {
+            // not thrown b/c we're using a string reader...
+            throw new RuntimeException(e);
+        }
 
-        String[] tokenizeResult = Tokenizer.tokenize(q, Tokenizer.defaultRegex);
-        for (String token : tokenizeResult) {
-            terms.add(token);
-
-            // do stemming
-            token = stemmer.stem(token);
-            terms.add(token);
-
-            // remove accents after stemming
-            token = Tokenizer.removeAccents(token);
+        for (String token : result) {
             terms.add(token);
         }
 

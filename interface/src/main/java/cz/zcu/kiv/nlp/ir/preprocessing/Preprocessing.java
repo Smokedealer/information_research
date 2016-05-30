@@ -1,9 +1,14 @@
 package cz.zcu.kiv.nlp.ir.preprocessing;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 import cz.zcu.kiv.nlp.ir.trec.data.Document;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.cz.CzechAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 /**
  * Class represents preprocessing for loaded documents
@@ -13,39 +18,36 @@ import cz.zcu.kiv.nlp.ir.trec.data.Document;
  */
 public class Preprocessing {
 
-	/** Czech stemmer */
-	static Stemming stemmer = new CzechStemmerAgressive();
-
 	/**
 	 * Method run preprocessing on loadid dates with stopwords
 	 * @param docs loaded documents
-	 * @param stopwords czech stopwords
      * @return dictionary
      */
-    public static HashMap<String, TermInfo> run(Map<String, Document> docs, Set<String> stopwords) {
-        
+    public static HashMap<String, TermInfo> run(Map<String, Document> docs) {
+
+		CzechAnalyzer analyzer = new CzechAnalyzer(CzechAnalyzer.getDefaultStopSet());
         HashMap<String, TermInfo> dictionary = new HashMap<String, TermInfo>();
 
 		for (Map.Entry<String, Document> entry : docs.entrySet()) {
             String line = entry.getValue().getTitle();
-			line += " " + entry.getValue().getTags();
+			line += " " + entry.getValue().getText();
+//			line += " " + entry.getValue().getTags();
 
-            // to lower case
-            line = line.toLowerCase();
-            // remove accents before stemming
-            line = Tokenizer.removeAccents(line);
-			String[] tokenizeResult = Tokenizer.tokenize(line, Tokenizer.defaultRegex);
+			List<String> result = new ArrayList<String>();
+			try {
+				TokenStream stream  = analyzer.tokenStream(null, new StringReader(line));
+				stream.reset();
+				while (stream.incrementToken()) {
+					result.add(stream.getAttribute(CharTermAttribute.class).toString());
+				}
+				stream.close();
+			} catch (IOException e) {
+				// not thrown b/c we're using a string reader...
+				throw new RuntimeException(e);
+			}
 
-            for (String token : tokenizeResult) {
-            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
-            	
-            	// do stemming
-            	token = stemmer.stem(token);
-            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
-            	
-            	// remove accents after stemming
-            	token = Tokenizer.removeAccents(token);
-            	controlToken(dictionary, token, entry.getValue().getId(), stopwords);
+            for (String token : result) {
+            	controlToken(dictionary, token, entry.getValue().getId());
             }
         }
         
@@ -57,15 +59,9 @@ public class Preprocessing {
 	 * @param dictionary dictionary
 	 * @param token token
 	 * @param docID document ID
-	 * @param stopwords stopwords
      * @return hash-map dictionary
      */
-    public static HashMap<String, TermInfo> controlToken(HashMap<String, TermInfo> dictionary, String token, String docID, Set<String> stopwords) {
-    	
-    	if (stopwords.contains(token)) {
-    		// TOKEN IS FROM STOPWORDS
-    		return null;
-    	}
+    public static HashMap<String, TermInfo> controlToken(HashMap<String, TermInfo> dictionary, String token, String docID) {
 
     	if (!dictionary.containsKey(token)) {
     		// TOKEN IS NEW

@@ -41,7 +41,6 @@ public class Evaluator {
             hits.add(ri);
         }
 
-
         Comparator<Result> cmp = new Comparator<Result>() {
             public int compare(Result o1, Result o2) {
                 if (o1.getScore() > o2.getScore()) return -1;

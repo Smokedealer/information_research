@@ -27,7 +27,8 @@ import java.util.*;
 public class TestTrecEval {
 
     static Logger log = Logger.getLogger(TestTrecEval.class);
-    static final String OUTPUT_DIR = "./TREC";
+//    static final String OUTPUT_DIR = "./TREC";
+    static final String OUTPUT_DIR = "/home/dzejkob23/GIT/information_research/interface/TREC";
 
 
     protected static void configureLogger() {
@@ -112,9 +113,14 @@ public class TestTrecEval {
 
     private static String runTrecEval(String predictedFile) throws IOException {
 
-        String commandLine = "./trec_eval.8.1/./trec_eval" +
-                " ./trec_eval.8.1/czcech" +
-                " " + predictedFile;
+//        String commandLine = "./trec_eval.8.1/./trec_eval" +
+//                " ./trec_eval.8.1/czcech" +
+//                " " + predictedFile;
+
+        String commandLine =    "/home/dzejkob23/GIT/information_research/interface/trec_eval.8.1/" +
+                                "./trec_eval" +
+                                " /home/dzejkob23/GIT/information_research/interface/trec_eval.8.1/czcech" +
+                                " " + predictedFile;
 
         System.out.println(commandLine);
         Process process = Runtime.getRuntime().exec(commandLine);
