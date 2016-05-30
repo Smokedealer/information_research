@@ -20,6 +20,9 @@ public class Ranker {
     /** Search query */
     private final String QUERY;
 
+    /** Map with occurs term */
+    private Map<String, Set<String>> docsContainsTerm = new HashMap<String, Set<String>>();
+
     /**
      * Constructor
      * @param documents documents
@@ -62,9 +65,9 @@ public class Ranker {
 
         for (String term : terms) {
 
-
-            double idfTerm = Math.log10(1 + 1 / 1);
-            double tfTerm = 1 + Math.log10(termFrequencyInQuery.get(term));
+            double termInDocs = docsContainsTerm.get(term).size();
+            double idfTerm = Math.log(1 + RESULTS.size() / (termInDocs + 1));
+            double tfTerm = 1 + Math.log(termFrequencyInQuery.get(term));
 
             weightVector.add(tfTerm * idfTerm);
 
@@ -79,7 +82,6 @@ public class Ranker {
      */
     public Map<String, Vector<Double>> weightTfIdfDocs() {
         Map<String, Map<String, Integer>> termFrequencyInDocs = new HashMap<String, Map<String, Integer>>();
-        Map<String, Set<String>> docsContainsTerm = new HashMap<String, Set<String>>();
 
         for (String docId : RESULTS) {
 
@@ -127,19 +129,17 @@ public class Ranker {
         int sumaDocs = RESULTS.size();
 
         // call method for computing tf_idf
-        return computeTfIdf(termFrequencyInDocs, docsContainsTerm, sumaDocs);
+        return computeTfIdf(termFrequencyInDocs, sumaDocs);
     }
 
     /**
      * Compute angle merging query and documents tf-idf vectors
      * @param termFrequencyInDocs term frequency in doc
-     * @param docsContainsTerm how many times term occurs in documents
      * @param sumaDocs count of documents
      * @return computed tf-idf
      */
-    private Map<String, Vector<Double>> computeTfIdf (Map<String, Map<String, Integer>> termFrequencyInDocs,
-                               Map<String, Set<String>> docsContainsTerm,
-                               int sumaDocs) {
+    private Map<String, Vector<Double>> computeTfIdf (Map<String, Map<String,
+                                                        Integer>> termFrequencyInDocs, int sumaDocs) {
 
         Map<String, Vector<Double>> tfIdf_vectors = new HashMap<String, Vector<Double>>();
 
@@ -164,10 +164,10 @@ public class Ranker {
                         termInDocs = 1;
                     }
 
-                    idfTerm = Math.log10(1 + sumaDocs / termInDocs);
+                    idfTerm = Math.log(1 + sumaDocs / (termInDocs + 1));
 
                     if (termFreqInDoc != 0) {
-                        tfTerm = 1 + Math.log10(termFreqInDoc);
+                        tfTerm = 1 + Math.log(termFreqInDoc);
                     }
 
                     // compute tf-idf
@@ -191,14 +191,14 @@ public class Ranker {
      */
     private Map<String, Integer> removeBooleanOperators (Map<String, Integer> frequency) {
 
-        if (frequency.containsKey("and")) {
-            frequency.remove("and");
+        if (frequency.containsKey("AND")) {
+            frequency.remove("AND");
         }
-        if (frequency.containsKey("or")) {
-            frequency.remove("or");
+        if (frequency.containsKey("OR")) {
+            frequency.remove("OR");
         }
-        if (frequency.containsKey("not")) {
-            frequency.remove("not");
+        if (frequency.containsKey("NOT")) {
+            frequency.remove("NOT");
         }
 
         return frequency;

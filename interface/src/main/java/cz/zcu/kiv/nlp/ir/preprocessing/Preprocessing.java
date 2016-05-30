@@ -31,7 +31,7 @@ public class Preprocessing {
 		for (Map.Entry<String, Document> entry : docs.entrySet()) {
             String line = entry.getValue().getTitle();
 			line += " " + entry.getValue().getText();
-//			line += " " + entry.getValue().getTags();
+			line += " " + entry.getValue().getTags();
 
 			List<String> result = new ArrayList<String>();
 			try {

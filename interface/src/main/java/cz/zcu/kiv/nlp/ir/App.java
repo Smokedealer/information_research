@@ -32,8 +32,6 @@ public class App {
 			System.out.println(hit.toString(""));
 		}
 
-		// TODO - analyzation for czech lang.
-		// TODO - implamantation for NOT query - check the computing of weight, cut values in maps by NOT configuration
 	}
 	
 }

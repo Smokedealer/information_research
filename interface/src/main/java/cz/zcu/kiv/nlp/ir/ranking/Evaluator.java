@@ -69,11 +69,12 @@ public class Evaluator {
         Double queryNormalizeVector = normalizeVector(queryWeight);
 
         for (Map.Entry<String, Vector<Double>> entry : resultsWeight.entrySet()) {
+            Double resulNormalizeVector = normalizeVector(entry.getValue());
+            Double cos = 0.0;
             for (int i = 0; i < queryWeight.size(); i++) {
-                Double resulNormalizeVector = normalizeVector(entry.getValue());
-                Double cos = (queryWeight.get(i) * entry.getValue().get(i))/(queryNormalizeVector * resulNormalizeVector);
-                cosinus.put(entry.getKey(), cos);
+                cos += (queryWeight.get(i) * entry.getValue().get(i))/(queryNormalizeVector * resulNormalizeVector);
             }
+            cosinus.put(entry.getKey(), cos);
         }
 
         return cosinus;
