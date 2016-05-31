@@ -28,19 +28,20 @@ public class TestTrecEval {
 
     static Logger log = Logger.getLogger(TestTrecEval.class);
     static final String OUTPUT_DIR = "./TREC";
-
+    static final int TOP_X = 10;
+    private static String path = "";
 
     protected static void configureLogger() {
         BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
 
-        File results = new File(OUTPUT_DIR);
+        File results = new File(path + OUTPUT_DIR);
         if (!results.exists()) {
             results.mkdir();
         }
 
         try {
-            Appender appender = new WriterAppender(new PatternLayout(), new FileOutputStream(new File(OUTPUT_DIR + "/" + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + " - " + ".log"), false));
+            Appender appender = new WriterAppender(new PatternLayout(), new FileOutputStream(new File(path + OUTPUT_DIR + "/" + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + " - " + ".log"), false));
             BasicConfigurator.configure(appender);
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,14 +51,18 @@ public class TestTrecEval {
     }
 
     public static void main(String args[]) throws IOException, QueryParserException {
-        final File trecRelevanceFile = new File(OUTPUT_DIR + "/AH-CLEF2007_cs.xml");
+        if (args[0] != null) {
+            path = args[0];
+        }
+
+        final File trecRelevanceFile = new File(path + OUTPUT_DIR + "/AH-CLEF2007_cs.xml");
         configureLogger();
 
 //        todo constructor
         final long startQueryResults = System.currentTimeMillis();
         Index index = new Index();
 
-        File serializedData = new File(OUTPUT_DIR + "/czechData.bin");
+        File serializedData = new File(path + OUTPUT_DIR + "/czechData.bin");
 
         List<Document> documents = new ArrayList<Document>();
         log.info("load");
@@ -83,8 +88,8 @@ public class TestTrecEval {
             e.printStackTrace();
         }
 
-        for (Topic t : topics) {
-            List<Result> resultHits = index.search(t.getTitle() + " " + t.getDescription());
+        if (args[1] != null) {
+            List<Result> resultHits = index.search(args[1]);
 
             Comparator<Result> cmp = new Comparator<Result>() {
                 public int compare(Result o1, Result o2) {
@@ -95,18 +100,40 @@ public class TestTrecEval {
             };
 
             Collections.sort(resultHits, cmp);
-            for (Result r : resultHits) {
-                final String line = r.toString(t.getId());
-                lines.add(line);
+
+            System.out.println("***** Vysledky vyhledavani *****");
+            for (int i = 0; i < TOP_X; i++) {
+                Result r = resultHits.get(i);
+                System.out.println(i + ". " + r.toString(r.getDocumentID()));
+            }
+
+        } else {
+            for (Topic t : topics) {
+                List<Result> resultHits = index.search(t.getTitle() + " " + t.getDescription());
+
+                Comparator<Result> cmp = new Comparator<Result>() {
+                    public int compare(Result o1, Result o2) {
+                        if (o1.getScore() > o2.getScore()) return -1;
+                        if (o1.getScore() == o2.getScore()) return 0;
+                        return 1;
+                    }
+                };
+
+                Collections.sort(resultHits, cmp);
+                for (Result r : resultHits) {
+                    final String line = r.toString(t.getId());
+                    lines.add(line);
 //                log.info(line);
+                }
             }
         }
 
+
         final long queryResults = System.currentTimeMillis();
-        System.out.println("Time - cele to trva: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
+        System.out.println("Time - cele to trvalo: " + ((queryResults - startQueryResults) / 1000) / 60 + " minut" +
                 " " + ((queryResults - startQueryResults) / 1000) % 60 + " sekund " + ((queryResults - startQueryResults) % 1000) + " milisekund" );
 
-        final File outputFile = new File(OUTPUT_DIR + "/results " + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + ".txt");
+        final File outputFile = new File(path + OUTPUT_DIR + "/results " + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + ".txt");
         IOUtils.saveFile(outputFile, lines);
         //try to run evaluation
         try {
@@ -118,8 +145,8 @@ public class TestTrecEval {
 
     private static String runTrecEval(String predictedFile) throws IOException {
 
-        String commandLine = "./trec_eval.8.1/./trec_eval" +
-                " ./trec_eval.8.1/czcech" +
+        String commandLine = path + "./trec_eval.8.1/./trec_eval " +
+                path + "./trec_eval.8.1/czcech" +
                 " " + predictedFile;
 
         System.out.println(commandLine);
