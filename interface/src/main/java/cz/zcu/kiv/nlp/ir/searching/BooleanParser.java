@@ -62,8 +62,21 @@ public class BooleanParser extends AbstractEvaluator<String> implements Parser {
 	
 	@Override
 	protected String evaluate (Operator operator, Iterator<String> operands, Object evaluationContext) {
-		if (operator == NOT || operator == OR || operator == AND) {
-			return this.applyOperator(operator, operands.next(), operands.next());
+		String o1 = null;
+		String o2 = null;
+
+		if (operands.hasNext()) {
+			o1 = operands.next();
+		}
+		if (operands.hasNext()) {
+			o2 = operands.next();
+		}
+
+		System.out.println(operator.getSymbol() + " " + o1 + " " + o2);
+		if (operator == OR || operator == AND) {
+			return this.applyOperator(operator, o1, o2);
+		} if (operator == NOT) {
+			return this.applyOperator(operator, o1, "");
 		}
 	
 		return "Unknown operand";

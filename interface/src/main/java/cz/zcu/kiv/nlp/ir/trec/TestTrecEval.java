@@ -179,11 +179,11 @@ public class TestTrecEval {
         final File outputFile = new File(path + OUTPUT_DIR + "/results " + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + ".txt");
         IOUtils.saveFile(outputFile, lines);
         //try to run evaluation
-//        try {
-//            runTrecEval(outputFile.toString());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            runTrecEval(outputFile.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static List<Document> parseDocuments(File directory) throws ParseException, ParserConfigurationException, IOException, SAXException, XPathExpressionException {
