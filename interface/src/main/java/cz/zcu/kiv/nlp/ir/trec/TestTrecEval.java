@@ -50,9 +50,44 @@ public class TestTrecEval {
         Logger.getRootLogger().setLevel(Level.INFO);
     }
 
+    private static String runTrecEval(String predictedFile) throws IOException {
+
+        String commandLine = path + "./trec_eval.8.1/./trec_eval " +
+                path + "./trec_eval.8.1/czcech" +
+                " " + predictedFile;
+
+        System.out.println(commandLine);
+        Process process = Runtime.getRuntime().exec(commandLine);
+
+        BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+        String trecEvalOutput = null;
+        StringBuilder output = new StringBuilder("TREC EVAL output:\n");
+        for (String line = null; (line = stdout.readLine()) != null; ) output.append(line).append("\n");
+        trecEvalOutput = output.toString();
+        System.out.println(trecEvalOutput);
+
+        int exitStatus = 0;
+        try {
+            exitStatus = process.waitFor();
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        System.out.println(exitStatus);
+
+        stdout.close();
+        stderr.close();
+
+        return trecEvalOutput;
+    }
+
     public static void main(String args[]) throws IOException, QueryParserException {
-        if (args[0] != null) {
+
+        try {
             path = args[0];
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("Path to dir not found. App will start with ./TREC and ./trec_eval.8.1.");
         }
 
         final File trecRelevanceFile = new File(path + OUTPUT_DIR + "/AH-CLEF2007_cs.xml");
@@ -88,8 +123,15 @@ public class TestTrecEval {
             e.printStackTrace();
         }
 
-        if (args[1] != null) {
-            List<Result> resultHits = index.search(args[1]);
+        String pathQuery = null;
+        try {
+            pathQuery = args[1];
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("Query to search not found. App will start with class sequence of queries.");
+        }
+
+        if (pathQuery != null) {
+            List<Result> resultHits = index.search(pathQuery);
 
             Comparator<Result> cmp = new Comparator<Result>() {
                 public int compare(Result o1, Result o2) {
@@ -102,7 +144,8 @@ public class TestTrecEval {
             Collections.sort(resultHits, cmp);
 
             System.out.println("***** Vysledky vyhledavani *****");
-            for (int i = 0; i < TOP_X; i++) {
+
+            for (int i = 0; i < (TOP_X > resultHits.size() ? resultHits.size() : TOP_X); i++) {
                 Result r = resultHits.get(i);
                 System.out.println(i + ". " + r.toString(r.getDocumentID()));
             }
@@ -136,43 +179,11 @@ public class TestTrecEval {
         final File outputFile = new File(path + OUTPUT_DIR + "/results " + SerializedDataHelper.SDF.format(System.currentTimeMillis()) + ".txt");
         IOUtils.saveFile(outputFile, lines);
         //try to run evaluation
-        try {
-            runTrecEval(outputFile.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String runTrecEval(String predictedFile) throws IOException {
-
-        String commandLine = path + "./trec_eval.8.1/./trec_eval " +
-                path + "./trec_eval.8.1/czcech" +
-                " " + predictedFile;
-
-        System.out.println(commandLine);
-        Process process = Runtime.getRuntime().exec(commandLine);
-
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-        String trecEvalOutput = null;
-        StringBuilder output = new StringBuilder("TREC EVAL output:\n");
-        for (String line = null; (line = stdout.readLine()) != null; ) output.append(line).append("\n");
-        trecEvalOutput = output.toString();
-        System.out.println(trecEvalOutput);
-
-        int exitStatus = 0;
-        try {
-            exitStatus = process.waitFor();
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-        }
-        System.out.println(exitStatus);
-
-        stdout.close();
-        stderr.close();
-
-        return trecEvalOutput;
+//        try {
+//            runTrecEval(outputFile.toString());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static List<Document> parseDocuments(File directory) throws ParseException, ParserConfigurationException, IOException, SAXException, XPathExpressionException {
