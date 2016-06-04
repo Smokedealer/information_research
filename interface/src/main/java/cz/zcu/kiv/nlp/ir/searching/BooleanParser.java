@@ -19,7 +19,7 @@ import cz.zcu.kiv.nlp.ir.indexing.TermInfo;
 public class BooleanParser extends AbstractEvaluator<String> implements Parser {
 
 	/** Operator NOT */
-	final static Operator NOT = new Operator("NOT", 1, Operator.Associativity.LEFT, 3);
+	final static Operator NOT = new Operator("NOT", 2, Operator.Associativity.LEFT, 3);
 
 	/** Operator AND */
 	final static Operator AND = new Operator("AND", 2, Operator.Associativity.LEFT, 2);
@@ -62,23 +62,11 @@ public class BooleanParser extends AbstractEvaluator<String> implements Parser {
 	
 	@Override
 	protected String evaluate (Operator operator, Iterator<String> operands, Object evaluationContext) {
-		String o1 = null;
-		String o2 = null;
 
-		if (operands.hasNext()) {
-			o1 = operands.next();
-		}
-		if (operands.hasNext()) {
-			o2 = operands.next();
+		if (operator == NOT || operator == OR || operator == AND) {
+			return this.applyOperator(operator, operands.next(), operands.next());
 		}
 
-		System.out.println(operator.getSymbol() + " " + o1 + " " + o2);
-		if (operator == OR || operator == AND) {
-			return this.applyOperator(operator, o1, o2);
-		} if (operator == NOT) {
-			return this.applyOperator(operator, o1, "");
-		}
-	
 		return "Unknown operand";
 	}
 
