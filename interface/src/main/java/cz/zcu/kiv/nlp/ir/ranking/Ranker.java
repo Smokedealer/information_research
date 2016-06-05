@@ -68,11 +68,12 @@ public class Ranker {
 
         for (String term : terms) {
 
-            double termInDocs = docsContainsTerm.get(term).size();
-            double idfTerm = Math.log(1 + RESULTS.size() / (termInDocs + 1));
-            double tfTerm = 1 + Math.log(termFrequencyInQuery.get(term));
-
-            weightVector.add(tfTerm * idfTerm);
+            if (docsContainsTerm.containsKey(term)) {
+                double termInDocs = docsContainsTerm.get(term).size();
+                double idfTerm = Math.log(1 + RESULTS.size() / (termInDocs + 1));
+                double tfTerm = 1 + Math.log(termFrequencyInQuery.get(term));
+                weightVector.add(tfTerm * idfTerm);
+            }
 
         }
 
